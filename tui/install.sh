@@ -47,12 +47,29 @@ cp "$SOURCE_PATH" "$INSTALL_DIR/$BINARY_NAME"
 
 color_green "installation successful!"
 echo
-color_yellow "important: make sure '$INSTALL_DIR' is in your shell's path."
-echo "you can do this by adding a line like this to your ~/.bashrc, ~/.zshrc, etc.:"
-echo
-color_green "    export PATH=\"
-$HOME/.local/bin:$PATH\"
-"
-echo
-echo "after that, restart your terminal. you can then run the app by just typing:"
-color_green "    pomosync"
+
+# --- path configuration ---
+SHELL_CONFIG_FILE=""
+if [ -n "$BASH_VERSION" ]; then
+    SHELL_CONFIG_FILE="$HOME/.bashrc"
+elif [ -n "$ZSH_VERSION" ]; then
+    SHELL_CONFIG_FILE="$HOME/.zshrc"
+fi
+
+if [ -n "$SHELL_CONFIG_FILE" ] && ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
+    color_yellow "important: to run 'pomosync' from anywhere, '$INSTALL_DIR' must be in your path."
+    read -p "add it to your $SHELL_CONFIG_FILE now? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "\n# adding pomosync install directory to path" >> "$SHELL_CONFIG_FILE"
+        echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> "$SHELL_CONFIG_FILE"
+        color_green "path added. please restart your terminal to apply the changes."
+        echo "you can then run the app by just typing:"
+        color_green "    pomosync"
+    else
+        color_yellow "okay. please add '$INSTALL_DIR' to your path manually."
+    fi
+else
+    echo "you can run the app by just typing:"
+    color_green "    pomosync"
+fi
