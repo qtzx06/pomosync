@@ -49,35 +49,33 @@ color_green "installation successful!"
 echo
 
 # --- path configuration ---
-SHELL_CONFIG_FILE=""
-if [[ "$SHELL" == *"zsh"* ]]; then
-    SHELL_CONFIG_FILE="$HOME/.zshrc"
-elif [[ "$SHELL" == *"bash"* ]]; then
-    SHELL_CONFIG_FILE="$HOME/.bashrc"
-fi
-
-PATH_EXPORT_LINE="export PATH=\"
-$HOME/.local/bin:$PATH\"
-"
-
-if [ -n "$SHELL_CONFIG_FILE" ] && ! grep -qF "$PATH_EXPORT_LINE" "$SHELL_CONFIG_FILE"; then
-    color_yellow "important: to run 'pomosync' from anywhere, '$INSTALL_DIR' must be in your path."
-    read -p "add it to your $SHELL_CONFIG_FILE now? (y/n) " -n 1 -r
+color_yellow "important: to run 'pomosync' from anywhere, '$INSTALL_DIR' must be in your path."
+read -p "would you like to add it to your shell configuration file now? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    SHELL_CONFIG_FILE=""
+    read -p "do you use bash or zsh? (b/z) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "\n# add pomosync to path" >> "$SHELL_CONFIG_FILE"
-        echo "$PATH_EXPORT_LINE" >> "$SHELL_CONFIG_FILE"
-        color_green "path added. please restart your terminal to apply the changes."
-        echo "you can then run the app by just typing:"
-        color_green "    pomosync"
+    if [[ $REPLY =~ ^[Bb]$ ]]; then
+        SHELL_CONFIG_FILE="$HOME/.bashrc"
+    elif [[ $REPLY =~ ^[Zz]$ ]]; then
+        SHELL_CONFIG_FILE="$HOME/.zshrc"
     else
-        color_yellow "okay. to add it manually, add this line to the bottom of your $SHELL_CONFIG_FILE:"
-        echo
-        color_green "    $PATH_EXPORT_LINE"
-        echo
-        color_yellow "then, restart your terminal."
+        color_red "invalid selection. please add the path manually."
+        exit 1
     fi
-else
-    echo "you can run the app by just typing:"
+
+    echo -e "\n# add pomosync to path" >> "$SHELL_CONFIG_FILE"
+    echo "export PATH=\"
+$HOME/.local/bin:$PATH\"" >> "$SHELL_CONFIG_FILE"
+    color_green "path added to $SHELL_CONFIG_FILE. please restart your terminal to apply the changes."
+    echo "you can then run the app by just typing:"
     color_green "    pomosync"
+else
+    color_yellow "okay. to add it manually, add this line to the bottom of your shell configuration file (e.g., ~/.zshrc or ~/.bashrc):"
+    echo
+    color_green "    export PATH=\"
+$HOME/.local/bin:$PATH\""
+    echo
+    color_yellow "then, restart your terminal."
 fi
