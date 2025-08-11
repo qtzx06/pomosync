@@ -66,8 +66,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     fi
 
     echo -e "\n# add pomosync to path" >> "$SHELL_CONFIG_FILE"
-    echo "export PATH=\"
-$HOME/.local/bin:$PATH\"" >> "$SHELL_CONFIG_FILE"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_CONFIG_FILE"
     color_green "path added to $SHELL_CONFIG_FILE. please restart your terminal to apply the changes."
     echo "you can then run the app by just typing:"
     color_green "    pomosync"
