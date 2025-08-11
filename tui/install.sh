@@ -49,27 +49,37 @@ color_green "installation successful!"
 echo
 
 # --- path configuration ---
-SHELL_CONFIG_FILE=""
-if [ -n "$BASH_VERSION" ]; then
-    SHELL_CONFIG_FILE="$HOME/.bashrc"
-elif [ -n "$ZSH_VERSION" ]; then
-    SHELL_CONFIG_FILE="$HOME/.zshrc"
-fi
-
-if [ -n "$SHELL_CONFIG_FILE" ] && ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
+if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
     color_yellow "important: to run 'pomosync' from anywhere, '$INSTALL_DIR' must be in your path."
-    read -p "add it to your $SHELL_CONFIG_FILE now? (y/n) " -n 1 -r
+    
+    SHELL_CONFIG_FILE=""
+    read -p "do you use bash or zsh? (b/z) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Bb]$ ]]; then
+        SHELL_CONFIG_FILE="$HOME/.bashrc"
+    elif [[ $REPLY =~ ^[Zz]$ ]]; then
+        SHELL_CONFIG_FILE="$HOME/.zshrc"
+    else
+        color_red "invalid selection. please add the path manually."
+        exit 1
+    fi
+
+    read -p "add '$INSTALL_DIR' to your $SHELL_CONFIG_FILE now? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "\n# add pomosync to path" >> "$SHELL_CONFIG_FILE"
-        echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> "$SHELL_CONFIG_FILE"
+        echo "export PATH=\"
+$HOME/.local/bin:$PATH\"
+" >> "$SHELL_CONFIG_FILE"
         color_green "path added. please restart your terminal to apply the changes."
         echo "you can then run the app by just typing:"
         color_green "    pomosync"
     else
         color_yellow "okay. to add it manually, add this line to the bottom of your $SHELL_CONFIG_FILE:"
         echo
-        color_green "    export PATH=\"$HOME/.local/bin:$PATH\""
+        color_green "    export PATH=\"
+$HOME/.local/bin:$PATH\"
+"
         echo
         color_yellow "then, restart your terminal."
     fi
