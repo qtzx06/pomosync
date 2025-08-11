@@ -61,13 +61,21 @@ if [ -n "$SHELL_CONFIG_FILE" ] && ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
     read -p "add it to your $SHELL_CONFIG_FILE now? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "\n# adding pomosync install directory to path" >> "$SHELL_CONFIG_FILE"
-        echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> "$SHELL_CONFIG_FILE"
+        echo -e "\n# add pomosync to path" >> "$SHELL_CONFIG_FILE"
+        echo "export PATH=\"
+$HOME/.local/bin:$PATH\"
+" >> "$SHELL_CONFIG_FILE"
         color_green "path added. please restart your terminal to apply the changes."
         echo "you can then run the app by just typing:"
         color_green "    pomosync"
     else
-        color_yellow "okay. please add '$INSTALL_DIR' to your path manually."
+        color_yellow "okay. to add it manually, add this line to the bottom of your $SHELL_CONFIG_FILE:"
+        echo
+        color_green "    export PATH=\"
+$HOME/.local/bin:$PATH\"
+"
+        echo
+        color_yellow "then, restart your terminal."
     fi
 else
     echo "you can run the app by just typing:"
