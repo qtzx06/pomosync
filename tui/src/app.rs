@@ -9,7 +9,7 @@ pub enum State {
 }
 
 impl State {
-    // This method is no longer needed, as the logic is handled in the update function.
+    // this method is no longer needed, as the logic is handled in the update function.
 }
 
 pub struct Cycle {
@@ -37,6 +37,7 @@ impl Cycle {
 
     pub fn update(&mut self) {
         if self.paused {
+            // don't update the timer when paused
             return;
         }
 

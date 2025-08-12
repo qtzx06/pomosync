@@ -13,28 +13,41 @@ mod ui;
 use app::Cycle;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // setup terminal
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
-    let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
+    let result = std::panic::catch_unwind(|| {
+        // setup terminal
+        enable_raw_mode().expect("failed to enable raw mode");
+        let mut stdout = io::stdout();
+        execute!(stdout, EnterAlternateScreen, EnableMouseCapture)
+            .expect("failed to enter alternate screen");
+        let backend = CrosstermBackend::new(stdout);
+        let mut terminal = Terminal::new(backend).expect("failed to create terminal");
 
-    // create app and run it
-    let mut app = Cycle::new();
-    let res = run_app(&mut terminal, &mut app);
+        // create app and run it
+        let mut app = Cycle::new();
+        let res = run_app(&mut terminal, &mut app);
 
-    // restore terminal
-    disable_raw_mode()?;
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )?;
-    terminal.show_cursor()?;
+        // restore terminal
+        disable_raw_mode().expect("failed to disable raw mode");
+        execute!(
+            terminal.backend_mut(),
+            LeaveAlternateScreen,
+            DisableMouseCapture
+        )
+        .expect("failed to leave alternate screen");
+        terminal.show_cursor().expect("failed to show cursor");
 
-    if let Err(err) = res {
-        println!("{err:?}");
+        if let Err(err) = res {
+            println!("Error: {err:?}\nPress any key to exit.");
+            event::read().expect("failed to read event");
+        }
+    });
+
+    if let Err(panic) = result {
+        // restore terminal
+        disable_raw_mode().ok();
+        execute!(io::stdout(), LeaveAlternateScreen, DisableMouseCapture).ok();
+        eprintln!("Panic: {panic:?}\nPress any key to exit.");
+        event::read().expect("failed to read event");
     }
 
     Ok(())
