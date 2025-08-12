@@ -9,13 +9,7 @@ pub enum State {
 }
 
 impl State {
-    fn next_state_name(&self) -> &'static str {
-        match self {
-            State::Work => "Short Break",
-            State::ShortBreak => "Work",
-            State::LongBreak => "Work",
-        }
-    }
+    // This method is no longer needed, as the logic is handled in the update function.
 }
 
 pub struct Cycle {
@@ -51,15 +45,15 @@ impl Cycle {
         let seconds_into_minute = now.second() as u64;
         let total_seconds_into_cycle = minutes_into_2h_cycle * 60 + seconds_into_minute;
 
-        let (new_state, state_name, state_start_minute, state_duration_minutes) =
+        let (new_state, state_name, next_state_name, state_start_minute, state_duration_minutes) =
             match minutes_into_2h_cycle {
-                0..=24 => (State::Work, "Work", 0, 25),
-                25..=29 => (State::ShortBreak, "Short Break", 25, 5),
-                30..=54 => (State::Work, "Work", 30, 25),
-                55..=59 => (State::ShortBreak, "Short Break", 55, 5),
-                60..=84 => (State::Work, "Work", 60, 25),
-                85..=89 => (State::ShortBreak, "Short Break", 85, 5),
-                90..=119 => (State::LongBreak, "Long Break", 90, 30),
+                0..=24 => (State::Work, "Work", "Short Break", 0, 25),
+                25..=29 => (State::ShortBreak, "Short Break", "Work", 25, 5),
+                30..=54 => (State::Work, "Work", "Short Break", 30, 25),
+                55..=59 => (State::ShortBreak, "Short Break", "Work", 55, 5),
+                60..=84 => (State::Work, "Work", "Short Break", 60, 25),
+                85..=89 => (State::ShortBreak, "Short Break", "Long Break", 85, 5),
+                90..=119 => (State::LongBreak, "Long Break", "Work", 90, 30),
                 _ => unreachable!(),
             };
 
@@ -69,7 +63,7 @@ impl Cycle {
 
         self.state = new_state;
         self.state_name = state_name.to_string();
-        self.next_state_name = self.state.next_state_name().to_string();
+        self.next_state_name = next_state_name.to_string();
         self.remaining_duration = Duration::from_secs(remaining_seconds);
     }
 
