@@ -6,10 +6,20 @@ a terminal based universal pomodoro timer, written in rust.
 
 2-hour cycle that starts every even hour (12:00, 2:00, 4:00, etc.).
 
-## demo
+## demos
 
-![clock](media/clock.png)
-![menu](media/menu.png)
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <img src="media/clock.png" alt="pomosync's clock." height="333">
+    </td>
+    <td align="center">
+      <img src="media/menu.png" alt="pomosync's menu." height="333">
+    </td>
+  </tr>
+</table>
+</div>
 
 ## installation
 
@@ -48,8 +58,20 @@ type `pomosync` in your terminal.
 
 i was experimenting with a three.js version of the pomodoro timer. here are some screenshots:
 
-![3js](media/3js.png)
-![web](media/web.png)
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <img src="media/3js.png" alt="3js." height="333">
+    </td>
+    <td align="center">
+      <img src="media/web.png" alt="web." height="333">
+    </td>
+  </tr>
+</table>
+</div>
+
 
 a full web version is coming soon.
 
